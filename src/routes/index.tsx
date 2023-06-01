@@ -1,25 +1,45 @@
-import { component$ } from '@builder.io/qwik';
-import type { DocumentHead } from '@builder.io/qwik-city';
+import { component$, useSignal,$ } from '@builder.io/qwik';
+import type { Signal } from '@builder.io/qwik';
+import {open as DialogOpen} from "@tauri-apps/api/dialog"
 
 export default component$(() => {
+  const xml=useSignal("");
   return (
     <>
-      <h1>Hi 👋</h1>
-      <p>
-        Can't wait to see what you build with qwik!
-        <br />
-        Happy coding.
-      </p>
+      <Dialog title="XML" ext='xml' content={xml} />
     </>
   );
 });
 
-export const head: DocumentHead = {
-  title: 'Welcome to Qwik',
-  meta: [
-    {
-      name: 'description',
-      content: 'Qwik site description',
-    },
-  ],
-};
+type DialogProps = {
+  title: string;
+  ext?:string;
+  content?:Signal<string>;
+}
+const Dialog = component$<DialogProps>(({title,content,ext}) => {
+  const path=useSignal("")
+  const select=$(async()=>{
+    const result = await DialogOpen({filters:[{name:title,extensions:[ext??"*"]}]}).catch(()=>"");
+    if(result&&!Array.isArray(result)){
+      path.value=result;
+      
+    }
+  })
+  return (
+    <>
+    <h1>{title}</h1>
+    <input type="text" bind:value={path}/>
+    <button onClick$={select}>Select</button>
+    </>
+  );
+})
+
+function xslt(xml:string,xslt:string){
+    const xsltProcessor = new XSLTProcessor();
+    const parser = new DOMParser();
+    const xmlDom = parser.parseFromString(xml, 'text/xml');
+    const xsltDom = parser.parseFromString(xslt, 'text/xml');
+    xsltProcessor.importStylesheet(xsltDom);
+    const resultDocument = xsltProcessor.transformToDocument(xmlDom);
+    return new XMLSerializer().serializeToString(resultDocument)
+}
