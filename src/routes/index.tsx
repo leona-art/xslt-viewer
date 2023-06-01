@@ -6,12 +6,24 @@ import { invoke } from '@tauri-apps/api';
 export default component$(() => {
   const xml=useSignal("");
   const xsl=useSignal("");
+  const result=useSignal("");
+  useVisibleTask$(async({track})=>{
+    track(()=>xml.value)
+    track(()=>xsl.value)
+    if(xml.value&&xsl.value){
+      result.value=xslt(xml.value,xsl.value);
+    }
+  })
   return (
     <>
       <Dialog title="XML" ext='xml' content={xml} />
-      <pre>{xml}</pre>
+      {/* <pre>{xml}</pre> */}
       <Dialog title="XSL" ext='xsl' content={xsl}/>
-      <pre>{xsl}</pre>
+      {/* <pre>{xsl}</pre> */}
+
+      <h1>Result</h1>
+      <div dangerouslySetInnerHTML={result.value}></div>
+      <pre>{result}</pre>
     </>
   );
 });
@@ -45,12 +57,12 @@ const Dialog = component$<DialogProps>(({title,content,ext}) => {
   );
 })
 
-// function xslt(xml:string,xslt:string){
-//     const xsltProcessor = new XSLTProcessor();
-//     const parser = new DOMParser();
-//     const xmlDom = parser.parseFromString(xml, 'text/xml');
-//     const xsltDom = parser.parseFromString(xslt, 'text/xml');
-//     xsltProcessor.importStylesheet(xsltDom);
-//     const resultDocument = xsltProcessor.transformToDocument(xmlDom);
-//     return new XMLSerializer().serializeToString(resultDocument)
-// }
+function xslt(xml:string,xslt:string){
+    const xsltProcessor = new XSLTProcessor();
+    const parser = new DOMParser();
+    const xmlDom = parser.parseFromString(xml, 'text/xml');
+    const xsltDom = parser.parseFromString(xslt, 'text/xml');
+    xsltProcessor.importStylesheet(xsltDom);
+    const resultDocument = xsltProcessor.transformToDocument(xmlDom);
+    return new XMLSerializer().serializeToString(resultDocument);
+}
