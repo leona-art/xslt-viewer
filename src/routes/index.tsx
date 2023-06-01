@@ -2,6 +2,7 @@ import { component$, useSignal,$ ,useVisibleTask$} from '@builder.io/qwik';
 import type { Signal } from '@builder.io/qwik';
 import {open as DialogOpen} from "@tauri-apps/api/dialog"
 import { invoke } from '@tauri-apps/api';
+import {emit,listen} from "@tauri-apps/api/event"
 
 export default component$(() => {
   const xml=useSignal("");
@@ -44,6 +45,10 @@ const Dialog = component$<DialogProps>(({title,content,ext}) => {
   useVisibleTask$(async({track})=>{
     track(()=>path.value)
     if(content){
+      // const unlisten=listen("file_change",(event)=>{
+      //   // event.payload
+      // })
+      emit("start_detection",{path:path.value})
       content.value= await invoke("read_file",{path:path.value}).catch(()=>"") as unknown as string;
     }
     
