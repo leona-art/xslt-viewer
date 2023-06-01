@@ -15,16 +15,16 @@ export default component$(() => {
     }
   })
   return (
-    <>
-      <Dialog title="XML" ext='xml' content={xml} />
-      {/* <pre>{xml}</pre> */}
-      <Dialog title="XSL" ext='xsl' content={xsl}/>
-      {/* <pre>{xsl}</pre> */}
+    <div class="pt-2 px-2">
+      <div class="flex flex-row justify-evenly">
+        <Dialog title="XML" ext='xml' content={xml} />
+        <Dialog title="XSL" ext='xsl' content={xsl}/>
+      </div>
 
       <h1>Result</h1>
       <div dangerouslySetInnerHTML={result.value}></div>
       <pre>{result}</pre>
-    </>
+    </div>
   );
 });
 
@@ -49,11 +49,11 @@ const Dialog = component$<DialogProps>(({title,content,ext}) => {
     
   })
   return (
-    <>
-    <h1>{title}</h1>
-    <input type="text" bind:value={path}/>
-    <button onClick$={select}>Select</button>
-    </>
+    <div class="block">
+      <h1 class="text-10">{title}</h1>
+      <input type="text" bind:value={path} class="border border-slate-300"/>
+      <button class="bg-sky-500 text-white px-1 mx-1 rounded-md" onClick$={select}>Select</button>
+    </div>
   );
 })
 
