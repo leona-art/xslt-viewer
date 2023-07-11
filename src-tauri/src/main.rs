@@ -1,10 +1,8 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use notify::{
-    recommended_watcher, Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher,
-};
-use serde::{Deserialize, Serialize};
+use notify::{Config, Event, EventKind, RecommendedWatcher, RecursiveMode, Watcher};
+use serde::Serialize;
 use std::collections::HashMap;
 use std::sync::mpsc::Receiver;
 use std::sync::{Arc, Mutex};
@@ -50,8 +48,6 @@ fn main() {
             watch_file,
             open_file,
             unwatch_file,
-            save_data,
-            load_data,
         ])
         .setup(|app| {
             let (xml_watcher, xml_rx) = create_watcher();
@@ -205,6 +201,7 @@ fn unwatch_file(state: State<'_, WatchStates>, ext: String) -> Result<(), String
             .unwatch(Path::new(path))
             .map_err(|err| err.to_string())?;
     }
+    
     // 監視対象のファイルパスをNoneにする
     *watch_state.current_path.lock().unwrap() = None;
 
