@@ -1,9 +1,9 @@
-name: Build Tauri App
+name: Build and Release Tauri App
 
 on:
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
 
 jobs:
   build:
@@ -48,3 +48,20 @@ jobs:
       run: |
         cargo install tauri-bundler --force
         npm run tauri:build
+
+    - name: Create GitHub Release
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./target/release/your_tauri_app_name
+        asset_name: xslt_viewer
+        asset_content_type: application/octet-stream
